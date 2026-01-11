@@ -1,0 +1,138 @@
+    applyDynamicWaveletEQ(frequencyData) {
+        // PROFESSIONAL LOUDNESS MAXIMIZER WITH CLARITY PRESERVATION
+        // Implements multiband compression, psychoacoustic enhancement, and intelligent limiting
+        
+        if (!this.eqEnabled || !this.filters.length) return;
+        
+        const sampleRate = this.audioContext.sampleRate;
+        const nyquist = sampleRate / 2;
+        
+        // Calculate RMS and peak for intelligent dynamics
+        let rmsSum = 0;
+        frequencyData.forEach(val => rmsSum += (val/255) * (val/255));
+        const rmsLevel = Math.sqrt(rmsSum / frequencyData.length);
+        const peakLevel = Math.max(...frequencyData) / 255;
+        
+        // Multiband analysis for frequency-specific compression
+        const subBass = this.analyzeBand(frequencyData, 0, 0.05, nyquist); // 0-5%
+        const bass = this.analyzeBand(frequencyData, 0.05, 0.15, nyquist); // 5-15%
+        const lowMids = this.analyzeBand(frequencyData, 0.15, 0.30, nyquist); // 15-30%
+        const mids = this.analyzeBand(frequencyData, 0.30, 0.50, nyquist); // 30-50%
+        const highMids = this.analyzeBand(frequencyData, 0.50, 0.70, nyquist); // 50-70%
+        const highs = this.analyzeBand(frequencyData, 0.70, 1.0, nyquist); // 70-100%
+        
+        this.frequencies.forEach((freq, index) => {
+            // Calculate bin index with wider analysis window
+            const binIndex = Math.floor(freq / nyquist * frequencyData.length);
+            const binWidth = Math.max(3, Math.floor(frequencyData.length * 0.02));
+            
+            // Average across frequency bin range
+            let levelSum = 0;
+            let count = 0;
+            for (let i = Math.max(0, binIndex - binWidth); i < Math.min(frequencyData.length, binIndex + binWidth); i++) {
+                levelSum += frequencyData[i];
+                count++;
+            }
+            const currentLevel = (levelSum / count) / 255;
+            
+            // PROFESSIONAL LOUDNESS OPTIMIZATION
+            // Combines psychoacoustic principles, multiband compression, and harmonic enhancement
+            let dynamicGain = 0;
+            let compressionRatio = 1.0;
+            
+            if (freq === 60) {
+                // SUB-BASS: Ultra-clean with minimal processing
+                // NO COMPRESSION - transparent sound
+                compressionRatio = 1.0; // No compression
+                const compressed = currentLevel; // No compression applied
+                
+                // DRASTICALLY REDUCED gain for zero distortion (max +0.5dB)
+                if (compressed < 0.15) {
+                    dynamicGain = 0.5; // Gentle boost
+                } else if (compressed < 0.4) {
+                    dynamicGain = 0.3; // Minimal warmth
+                } else if (compressed < 0.65) {
+                    dynamicGain = 0.1; // Subtle presence
+                } else if (compressed < 0.8) {
+                    dynamicGain = -0.1; // Gentle limiting
+                } else {
+                    dynamicGain = -0.4; // Prevent boom
+                }
+            } else if (freq === 150) {
+                // BASS: Ultra-clean warmth
+                compressionRatio = 1.0; // No compression
+                const compressed = currentLevel;
+                
+                // DRASTICALLY REDUCED gain (max +0.4dB)
+                if (compressed < 0.18) {
+                    dynamicGain = 0.4; // Gentle bass presence
+                } else if (compressed < 0.45) {
+                    dynamicGain = 0.3; // Minimal warmth
+                } else if (compressed < 0.7) {
+                    dynamicGain = 0.1; // Subtle energy
+                } else if (compressed < 0.82) {
+                    dynamicGain = -0.2; // Prevent muddiness
+                } else {
+                    dynamicGain = -0.5; // Gentle limiting
+                }
+            } else if (freq === 400) {
+                // LOW-MIDS: Ultra-clean clarity
+                compressionRatio = 1.0; // No compression
+                const compressed = currentLevel;
+                
+                // DRASTICALLY REDUCED cuts (max -0.6dB)
+                if (compressed < 0.25) {
+                    dynamicGain = 0.1; // Minimal body
+                } else if (compressed < 0.5) {
+                    dynamicGain = -0.1; // Gentle clarity
+                } else if (compressed < 0.7) {
+                    dynamicGain = -0.3; // Moderate mud removal
+                } else {
+                    dynamicGain = -0.6; // Gentle clarity
+                }
+            } else if (freq === 1000) {
+                // MIDS: Ultra-clean presence
+                compressionRatio = 1.0; // No compression
+                const compressed = currentLevel;
+                
+                // DRASTICALLY REDUCED gain (max +0.4dB)
+                if (compressed < 0.25) {
+                    dynamicGain = 0.4; // Gentle presence
+                } else if (compressed < 0.5) {
+                    dynamicGain = 0.2; // Minimal presence
+                } else if (compressed < 0.72) {
+                    dynamicGain = 0.1; // Maintain clarity
+                } else if (compressed < 0.85) {
+                    dynamicGain = -0.1; // Control harshness
+                } else {
+                    dynamicGain = -0.4; // Prevent fatigue
+                }
+            } else if (freq === 2500) {
+                // UPPER-MIDS: Ultra-clean definition
+                compressionRatio = 1.0; // No compression
+                const compressed = currentLevel;
+                
+                // DRASTICALLY REDUCED gain (max +0.5dB)
+                if (compressed < 0.22) {
+                    dynamicGain = 0.5; // Gentle clarity
+                } else if (compressed < 0.48) {
+                    dynamicGain = 0.3; // Minimal articulation
+                } else if (compressed < 0.68) {
+                    dynamicGain = 0.1; // Balanced presence
+                } else if (compressed < 0.8) {
+                    dynamicGain = -0.2; // Reduce harshness
+                } else {
+                    dynamicGain = -0.4; // Gentle limiting
+                }
+            } else if (freq === 6000) {
+                // TREBLE: Ultra-clean air
+                compressionRatio = 1.0; // No compression
+                const compressed = currentLevel;
+                
+                // DRASTICALLY REDUCED gain (max +0.3dB)
+                if (compressed < 0.2) {
+                    dynamicGain = 0.3; // Gentle air
+                } else if (compressed < 0.42) {
+                    dynamicGain = 0.2; // Minimal brightness
+                } else if (compressed < 0.62) {
+                    dynamicGain = 0.0; // Neutral balance

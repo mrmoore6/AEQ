@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRYSTAL 3D AUDIO - Spatial Headphone Equalizer</title>
+    <link rel="stylesheet" href="sonic_forge_web.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Title Section -->
+        <div class="title-section">
+            <h1 class="main-title">CRYSTAL 3D AUDIO</h1>
+            <p class="subtitle">Immersive 3D Sound for Headphones</p>
+        </div>
+
+        <!-- Import Button -->
+        <div class="import-section">
+            <label for="fileInput" class="import-btn">IMPORT AUDIO FILES (MP3/MP4)</label>
+            <input type="file" id="fileInput" accept="audio/mp3,audio/mpeg,audio/mp4,video/mp4" multiple style="display: none;">
+        </div>
+
+        <!-- Unified Content Section -->
+        <div class="unified-section" id="unifiedSection">
+        
+        <!-- Playlist Section -->
+        <div class="playlist-section">
+            <div class="playlist-header">
+                <h3 class="section-title">PLAYLIST</h3>
+                <div class="playlist-controls">
+                    <button class="playlist-btn" id="clearPlaylistBtn">Clear All</button>
+                    <button class="playlist-btn" id="shuffleBtn">Shuffle</button>
+                </div>
+            </div>
+            <div class="playlist-container" id="playlistContainer">
+                <p class="playlist-empty">No songs in playlist. Import files to begin.</p>
+            </div>
+        </div>
+
+        <!-- Music Player -->
+        <div class="player-section">
+            <h3 class="section-title">MUSIC PLAYER</h3>
+            <p class="now-playing" id="nowPlaying">No file loaded</p>
+            <p class="time-display" id="timeDisplay">00:00 / 00:00</p>
+            
+            <!-- Position Slider -->
+            <input type="range" class="position-slider" id="positionSlider" min="0" max="100" value="0">
+            
+            <!-- Player Controls -->
+            <div class="player-controls">
+                <button class="control-btn" id="prevBtn">⏮</button>
+                <button class="control-btn" id="playBtn">▶</button>
+                <button class="control-btn" id="stopBtn">■</button>
+                <button class="control-btn" id="nextBtn">⏭</button>
+                <div class="volume-control">
+                    <span class="volume-icon">VOL</span>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
+                    <span class="volume-label" id="volumeLabel">70%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p class="status-label" id="statusLabel">● READY TO PROCESS</p>
+        </div>
+
+        <!-- Audio Info Display -->
+        <div class="audio-info-section" id="audioInfoSection" style="display: none;">
+            <h3 class="section-title">LOSSLESS AUDIO INFO</h3>
+            <div class="audio-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Sample Rate:</span>
+                    <span class="info-value" id="sampleRate">-- Hz</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Bit Depth:</span>
+                    <span class="info-value" id="bitDepth">-- bit</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Channels:</span>
+                    <span class="info-value" id="channels">--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Duration:</span>
+                    <span class="info-value" id="audioDuration">--:--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Format:</span>
+                    <span class="info-value" id="audioFormat">WAV</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Quality:</span>
+                    <span class="info-value" id="audioQuality" style="color: #00FF00;">LOSSLESS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D Spatial Audio Indicator -->
+        <div class="spatial-audio-indicator" style="margin: 20px 0; text-align: center; background: rgba(0,150,255,0.1); padding: 15px; border-radius: 10px; border: 2px solid rgba(0,150,255,0.3);">
+            <h3 class="section-title" style="margin-bottom: 5px; color: #00D4FF;">🎧 3D SPATIAL AUDIO ACTIVE</h3>
+            <p style="color: #00AAFF; font-size: 12px; margin-bottom: 5px; font-weight: 600;">HRTF Binaural Processing for Headphones</p>
+            <p style="color: #888; font-size: 11px;">Automatic frequency-based 3D positioning • Spatial reverb • Enhanced depth</p>
+        </div>
+        
+        <!-- AI Automation Status -->
+        <div class="ai-status-section" style="margin: 20px 0; background: rgba(0,255,150,0.08); padding: 15px; border-radius: 10px; border: 2px solid rgba(0,255,150,0.25);">
+            <h3 class="section-title" style="margin-bottom: 10px; color: #00FFA5;">🤖 AI AUTOMATION STATUS</h3>
+            
+            <!-- Real-time Spectrum Visualizer - REMOVED -->
+            
+            <div id="aiStatus" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 11px; color: #00d9ff;">
+                <div>🤖 AI: INITIALIZING</div>
+                <div>🎵 Genre: UNKNOWN</div>
+                <div>😊 Mood: NEUTRAL</div>
+                <div>🔊 Ambient: 0%</div>
+                <div>😴 Fatigue: 0%</div>
+                <div>🌐 Spatial: 1.0x</div>
+                <div>⏰ Time Boost: 0%</div>
+                <div>📊 Learning: ACTIVE</div>
+            </div>
+            <p style="color: #888; font-size: 10px; margin-top: 10px; text-align: center;">Real-time adaptation based on genre, environment, and listening patterns</p>
+        </div>
+
+        <!-- AI EQ Controls -->
+        <div class="ai-eq-controls" style="margin: 20px 0; text-align: center;">
+            <h3 class="section-title" style="margin-bottom: 15px;">REAL-TIME DYNAMIC WAVELET EQ</h3>
+            <p style="color: #888; font-size: 12px; margin-bottom: 15px;">Adaptive Audio Enhancement - Continuously Optimizing for Pure Sound</p>
+            <div style="margin-top: 15px;">
+                <button class="eq-toggle-btn" id="eqToggleBtn" style="background: #00AA00; padding: 10px 20px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer;">DYNAMIC EQ: ON</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <p style="color: #06FFA5; font-size: 11px; font-weight: 600;">Auto-adjusting based on audio analysis</p>
+            </div>
+        </div>
+
+        <!-- Wavelet Frequency Response Curve -->
+        <div class="wavelet-section">
+            <h3 class="section-title">WAVELET FREQUENCY RESPONSE</h3>
+            <div class="wavelet-info">
+                <span id="waveletPresetName">Harman Target</span>
+                <span id="waveletPreamp">Preamp: -2.0dB</span>
+            </div>
+            <canvas id="waveletCanvas" width="800" height="240"></canvas>
+        </div>
+
+        <!-- EQ Visualization with AI Indicators -->
+        <div class="eq-section">
+            <div class="eq-header-with-indicators">
+                <h3 class="section-title">NEURAL EQ ANALYSIS</h3>
+                <!-- AI Enhancement Indicators -->
+                <div class="ai-indicators-horizontal" id="aiIndicatorsCompact">
+                    <span class="ai-text-indicator inactive" id="cnnText">CNN: 0.0dB</span>
+                    <span class="ai-text-indicator inactive" id="ganText">GAN: 0%</span>
+                    <span class="ai-text-indicator inactive" id="waveletText">WAVELET: 0Hz</span>
+                </div>
+            </div>
+            <div class="eq-bands">
+                <div class="eq-band">
+                    <div class="eq-bar-container">
+                        <div class="eq-bar" id="eq60"></div>
+                    </div>
+                    <p class="eq-freq">60Hz</p>
+                    <p class="eq-value" id="val60">+0.0dB</p>
+                </div>
+                <div class="eq-band">
+                    <div class="eq-bar-container">
+                        <div class="eq-bar" id="eq150"></div>
+                    </div>
+                    <p class="eq-freq">150Hz</p>
+                    <p class="eq-value" id="val150">+0.0dB</p>
+                </div>
+                <div class="eq-band">
+                    <div class="eq-bar-container">
+                        <div class="eq-bar" id="eq400"></div>
+                    </div>
+                    <p class="eq-freq">400Hz</p>
+                    <p class="eq-value" id="val400">+0.0dB</p>
+                </div>
+                <div class="eq-band">
+                    <div class="eq-bar-container">
+                        <div class="eq-bar" id="eq1000"></div>
+                    </div>
+                    <p class="eq-freq">1kHz</p>
+                    <p class="eq-value" id="val1000">+0.0dB</p>
+                </div>
+                <div class="eq-band">
+                    <div class="eq-bar-container">
+                        <div class="eq-bar" id="eq2500"></div>
+                    </div>
+                    <p class="eq-freq">2.5kHz</p>
+                    <p class="eq-value" id="val2500">+0.0dB</p>
+                </div>
+                <div class="eq-band">
+                    <div class="eq-bar-container">
+                        <div class="eq-bar" id="eq6000"></div>
+                    </div>
+                    <p class="eq-freq">6kHz</p>
+                    <p class="eq-value" id="val6000">+0.0dB</p>
+                </div>
+                <div class="eq-band">
+                    <div class="eq-bar-container">
+                        <div class="eq-bar" id="eq12000"></div>
+                    </div>
+                    <p class="eq-freq">12kHz</p>
+                    <p class="eq-value" id="val12000">+0.0dB</p>
+                </div>
+            </div>
+            </div>
+
+            <!-- Processing Log -->
+            <div class="log-section">
+                <h3 class="section-title">PROCESSING LOG</h3>
+                <div class="log-text" id="logText"></div>
+            </div>
+        </div>
+        
+        </div><!-- End Unified Section -->
+    </div>
+
+    <script src="sonic_forge_web_enhanced.js"></script>
+</body>
+</html>
